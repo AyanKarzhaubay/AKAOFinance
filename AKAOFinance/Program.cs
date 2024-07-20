@@ -15,7 +15,7 @@ namespace AKAOFinance
             ILogger logger = loggerFactory.CreateLogger<Program>();
 
             string connectionString = @"Data Source=KARZHAUBAYAYAN;Initial Catalog=OurFinance;Integrated Security=True;TrustServerCertificate=True";
-            string token = "5910511903:AAEb-KNwMYqJb-5AXPbPbC0gB_GcSjX0EBE";
+            string token = "Your token here";
             Console.Title = "TelegramBot";
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
