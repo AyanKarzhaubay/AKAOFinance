@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Azure;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -26,7 +27,7 @@ namespace AKAOFinance
         public async Task HandleMessageAsync(ITelegramBotClient botClient, Message msg)
         {
             logger.LogInformation($"Received a message with the text: {msg.Text}");
-            string warningMsg = "Нүктемен бөлінген үш нәрсені жазу қажетсіз: Аты.Бағасы.Сипаттамасы.\n\nСипаттама керек болмаса: Аты.Бағасы.";
+            string warningMsg = "Введите команду /help чтобы узнать доступные команды для бота.";
 
             if (msg.Text == "/start")
             {
@@ -44,6 +45,11 @@ namespace AKAOFinance
                 await HandleMyPurchasesAsync(botClient, msg.Chat.Id);
                 return;
             }
+            if (msg.Text.StartsWith("/help"))
+            {
+                await HandleHelpAsync(botClient, msg.Chat.Id);
+                return;
+            }
             string[] data = msg.Text.Split('.');
             if (data.Length != 2 && data.Length != 3)
             {
@@ -55,6 +61,17 @@ namespace AKAOFinance
 
             await dbHelper.AddPurchaseAsync(purchase, msg.Chat.Id);
         }
+
+        private async Task HandleHelpAsync(ITelegramBotClient botClient, long chatId)
+        {
+            string help = $"/start - начало работы с ботом" +
+                $"\n/help - список команд для бота" +
+                $"\n/mypurchases - список ваших покупок" +
+                $"\nЧтобы ввести вашу покупку, нужно ввести данные в следующем формате: " +
+                $"\nИмя покупки.Цена.Описание.\n\nОписание опционально.";
+            await botClient.SendTextMessageAsync(chatId, help);
+        }
+
         public Task HandleErrorAsync(ITelegramBotClient client, Exception exception, CancellationToken cancellationToken)
         {
             var errorMessage = exception switch
